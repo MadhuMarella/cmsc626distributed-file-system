@@ -1,0 +1,8 @@
+install python 3.7 and install MYSQL database 5.5 version and in code you can find MYSQL software
+copy content from database.txt and paste in MYSQL console
+
+while installation give MYSQL password as root
+
+and then install below package
+
+pip install PyMySQL==0.9.3
