@@ -1,4 +1,18 @@
-# cmsc626distributed-file-system
+# Encrypted Distibuted File System 
+We have designed multithreaded concurrent server which can access by N users to create and access their file systems. Replicated server also used for high availability, backup and disaster recovery.
+- All the directories,file name and file content are encrypted.
+- AES encryption algorithm is used in the project.
+- Created a UI for better usage of the features.
+
+### To operate the application user has to perform below steps:
+  1) **User Signup** : using this module user can register with the application and server will provide one directory space for that user
+  2) **User Login**  : using this module user can login to application
+  3) **File System Modules** : after login user can create their own directories and can create file in those directories and can delete, rename, write                                    data to those files
+  4) **Share Access System** : using this module user can share READ and WRITE access with other user by selecting a desired file
+
+
+
+## cmsc626distributed-file-system
 cmsc626distributed-file-system_Group7
 
 Download the following external softwares noted in the "requirements.txt"
