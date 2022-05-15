@@ -19,7 +19,7 @@ We have designed multi-threaded concurrent server which can access by N users to
     - pyaes <br />
       ``` pip install pyaes ```
     - pbkdf2 <br />
-      ``` pip install pyaes ```
+      ``` pip install pbkdf2 ```
     - PyMySql <br />
       ``` pip install PyMySQL==0.9.3 ```
 
