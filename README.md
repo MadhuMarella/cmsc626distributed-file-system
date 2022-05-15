@@ -1,5 +1,7 @@
 # Encrypted Distibuted File System 
-We have designed multithreaded concurrent server which can access by N users to create and access their file systems. Replicated server also used for high availability, backup and disaster recovery.
+
+## Introduction
+We have designed multi-threaded concurrent server which can access by N users to create and access their file systems. Replicated server also used for high availability, backup and disaster recovery.
 - All the directories,file name and file content are encrypted.
 - AES encryption algorithm is used in the project.
 - Created a UI for better usage of the features.
@@ -10,41 +12,57 @@ We have designed multithreaded concurrent server which can access by N users to 
   3) **File System Modules** : after login user can create their own directories and can create file in those directories and can delete, rename, write                                    data to those files
   4) **Share Access System** : using this module user can share READ and WRITE access with other user by selecting a desired file
 
+## Requirements :
+- Python 3.7+
+- MySQl database 5.5+
+- Python Libraries:
+    - pyaes <br />
+      ``` pip install pyaes ```
+    - pbkdf2 <br />
+      ``` pip install pyaes ```
+    - PyMySql <br />
+      ``` pip install PyMySQL==0.9.3 ```
 
+## Running the system
 
-## cmsc626distributed-file-system
-cmsc626distributed-file-system_Group7
+### Building the database
+  - create a database and use <br />
+    ``` 
+        create database distributed; 
+        use distributed;
+     ```
+  - create table register and access <br />
+    ```
+      create table register(username varchar(30) primary key,
+      password varchar(30),
+      contact varchar(12));
+      
+      create table access(owner varchar(30),
+      user varchar(30),
+      filename varchar(30) primary key,
+      access_mode varchar(30));
+    ```
+  
+### Building the servers
+  - Run the server from "DistributedServer" Folder.
+    ```
+      python Server.py
+    ```
+  - Run the replica server from "DistributedServer2" Folder.
+    ```
+      python Server2.py
+    ```
 
-Download the following external softwares noted in the "requirements.txt"
+### Client usage:
+  - In Client.py modify the mysql details with the details used when setting up mysql in system.
+  - Run the Client.py program
+    ```
+      python Client.py
+    ```
+  - In the popup screen regester using new user sighup
+  - Login to the page 
+  - create/delete/rename/update file transactions are allowed.
+  - All the data in the backend are encrypted.
 
-install the the following libraries:
-pyaes,pbkdf2
-using pip install.
-
-once the mysql is downloaded, proceed with the table creation as shown in "database.txt"
-it will create 2 tables with names as register and access.
-register is used to store the user credentials and access table is used to store the file access rights.
-
-After the completion of tables creation, start the "Server.py" file which is in the "DistributedServer" Folder.
-it can be started using command "python Server.py" once you navigated the terminal into "DistributedServer" Folder.
-
-similarly start the "Server2.py" file which is in the "DistributedServer2" Folder.
-
-After successfully starting the Server, open a new terminal and navigate to The Client folder.
-
-Before running the Client.py, Change the mysql details in the code part where replace the root password with the password that you set up at the time of setting the mysql.
-
-once these changes are done, run the Client.py file using the command "python Client.py"
-
-Once it will start it has login and signup page.
-
-Signup if the user is new and login if the user is already present in the database.
-
-After the successful completion of login a new UI will appear where you can perform differnt different file CRUD Operations.
-
-
-The above procedure will work if you are running the clients and servers in the same machine.
-
-If we want to run the code in different machines then take the ip address of the machine which has server running on it and replace the localhost part in server and Client.py file.
-
-
+### **NOTE** 
+In order to run servers and client in multiple machines use ip-address of the machine instead of localhost and update it in client.py,Server.py and Server2.py.
