@@ -9,7 +9,6 @@ import pickle
 import pyaes, pbkdf2
 import base64
 
-
 main = tkinter.Tk()
 main.title("Distributed File System") 
 main.maxsize(width=500 ,  height=300)
@@ -18,6 +17,7 @@ main.minsize(width=500 ,  height=300)
 global login_user, login_pass, sign_user, sign_pass, contact, username, count, winsignup, winlogin, text, dirname, filecombo, accessList
 count = 0
 global available_files
+
 
 def getKey(): #generating key with PBKDF2 for AES
     password = "s3cr3t*c0d3"
@@ -117,13 +117,31 @@ def deleteFile():
     client.send(features)
     data = client.recv(100)
     data = data.decode()
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+    client.connect(('localhost', 2224))
+    features = []
+    features.append("deletefile")
+    features.append(username)
+    features.append(dirname+"/"+filename)
+    features = pickle.dumps(features)
+    client.send(features)
+    data = client.recv(100)
+    data = data.decode()
     for i in range(len(available_files)):
         names = available_files[i]
+        print("----##########")
+        print(names)
         names = names.replace("\\","/")
+        print("----------")
+        print(names)
+        
         arr = names.split("/")
+        
         if arr[3] == filename:
             del available_files[i]
+    
     text.insert(END,data+"\n")    
+    
     
 def writeFile():
     global username, text
@@ -176,6 +194,7 @@ def writeFile():
         client.connect(('localhost', 2224))
         features = pickle.dumps(features)
         client.send(features)
+        
     else:
         messagebox.showinfo("You dont have permission to write to this file",username + "You dont have permission to write to this file" + current_name)
         
@@ -233,19 +252,21 @@ def readFile():
         text.insert(END,data)
     else:
         text.insert(END,"files does not exists\n")    
-
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+    client.connect(('localhost', 2224))
+    client.send(features)
 
 def renameFile():
     global username, text
     global dirname
-    '''dirname = filecombo.get()
+    dirname = filecombo.get()
     dirname = dirname.replace("\\","/")
     arr = dirname.split("/")
-    usernames = arr[1]
+    username = arr[1]
     dirname = arr[2]
-    oldname = arr[3]'''
-    dirname = simpledialog.askstring(title="Please enter directory name", prompt="Please enter directory name")
-    oldname = simpledialog.askstring(title="Please enter old file name", prompt="Please enter old file name")
+    oldname = arr[3]
+    # dirname = simpledialog.askstring(title="Please enter directory name", prompt="Please enter directory name")
+    # oldname = simpledialog.askstring(title="Please enter old file name", prompt="Please enter old file name")
     newname = simpledialog.askstring(title="Please enter new file name", prompt="Please enter new file name")
     dirname = encrypt(dirname)
     dirname = str(base64.b64encode(dirname),'utf-8')
@@ -265,6 +286,15 @@ def renameFile():
     client.send(features)
     data = client.recv(100)
     data = data.decode()
+    dirname = base64.b64decode(dirname)
+    dirname = decrypt(dirname)
+    dirname = dirname.decode("utf-8")
+    newname = base64.b64decode(newname)
+    newname = decrypt(newname)
+    newname = newname.decode("utf-8")
+    oldname = base64.b64decode(oldname)
+    oldname = decrypt(oldname)
+    oldname = oldname.decode("utf-8")
     available_files.append('files/'+username+"/"+dirname+"/"+newname)
     for i in range(len(available_files)):
         if oldname in available_files:
@@ -272,6 +302,9 @@ def renameFile():
             available_files.remove(old)
     filecombo['values'] = available_files
     text.insert(END,data+"\n")
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+    client.connect(('localhost', 2224))
+    client.send(features)
 
 
 
@@ -345,8 +378,19 @@ def readFiles():
     client.send(features)
     data = client.recv(10000)
     data = pickle.loads(data)
+    
     for i in range(len(data)):
-        available_files.append(data[i])
+        # print(data[i])
+        arr = data[i].split("/")
+        dirname = arr[2]
+        filename = arr[3]
+        dirname = base64.b64decode(dirname)
+        dirname = decrypt(dirname)
+        dirname = dirname.decode("utf-8")
+        filename = base64.b64decode(filename)
+        filename = decrypt(filename)
+        filename = filename.decode("utf-8")
+        available_files.append('files/'+username+"/"+dirname+"/"+filename)
 
     con = pymysql.connect(host='127.0.0.1',port = 3306,user = 'root', password = 'toor@123', database = 'distributed',charset='utf8')
     with con:
@@ -355,6 +399,9 @@ def readFiles():
         rows = cur.fetchall()
         for row in rows:
             available_files.append(row[0])
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+    client.connect(('localhost', 2224))
+    client.send(features)
 
     
 
